@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:moveflix/core/domain/models/body_sex.dart';
 import 'package:moveflix/core/domain/models/user.dart';
 import 'package:moveflix/features/profile/presentation/register_viewmodel.dart';
+import 'package:moveflix/features/profile/presentation/widget/progress_button.dart';
 import 'package:moveflix/features/profile/presentation/widget/sex_input_page.dart';
 import 'package:moveflix/features/profile/presentation/widget/text_input_page.dart';
 import 'package:moveflix/features/workout/workout_routes.dart';
@@ -81,7 +82,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
             onChanged: viewModel.onHeightChanged,
             inputFormatters: [HeightInputFormatter()],
           ),
-          () => false
+          () => viewModel.state.isHeightValid
         ),
         (
           InputPage(
@@ -92,14 +93,14 @@ class _RegisterWidgetState extends State<RegisterWidget> {
             onChanged: viewModel.onWeightChanged,
             inputFormatters: [WeightInputFormatter()],
           ),
-          () => false,
+          () => viewModel.state.isWeightValid,
         ),
         (
           SexInputPage(
             value: viewModel.state.sex,
             onSexChanged: viewModel.onSexChanged,
           ),
-          () => false,
+          () => true,
         ),
       ];
 
@@ -162,7 +163,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                     ],
                   ),
                 ),
-
                 Expanded(
                   child: Theme(
                     data: Theme.of(context).copyWith(
@@ -183,112 +183,28 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                           ),
                     ),
                     child: ListenableBuilder(
-                        listenable: viewModel,
-                        builder: (_, __) => PageView(
-                              controller: _pageController,
-                              onPageChanged: (index) {
-                                setState(() {
-                                  _currentPage = index;
-                                });
-                              },
-                              children: pages.map((page) => page.$1).toList(),
-                            )),
+                      listenable: viewModel,
+                      builder: (_, __) => PageView(
+                        controller: _pageController,
+                        onPageChanged: (index) {
+                          setState(() {
+                            _currentPage = index;
+                          });
+                        },
+                        children: pages.map((page) => page.$1).toList(),
+                      ),
+                    ),
                   ),
                 ),
-
-                // Container(
-                //   padding: const EdgeInsets.all(8),
-                //   decoration: BoxDecoration(
-                //     borderRadius: BorderRadius.circular(8),
-                //     color: Theme.of(context).colorScheme.surface,
-                //   ),
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       Padding(
-                //         padding: const EdgeInsets.only(top: 24, bottom: 12),
-                //         child: FieldText(
-                //           controller: _nameController,
-                //           label: 'What your name?',
-                //           hintText: 'Ex: David Gaspar',
-                //           textCapitalization: TextCapitalization.words,
-                //           validator: (v) =>
-                //               (v == null || v.trim().isEmpty) ? 'Informe seu nome' : null,
-                //         ),
-                //       ),
-                //       Divider(height: 1, color: Colors.grey.withAlpha(100), thickness: 1),
-                //       Padding(
-                //         padding: const EdgeInsets.only(top: 24, bottom: 12),
-                //         child: _BirthdayField(
-                //           key: _birthdayKey,
-                //           validator: (v) => v == null
-                //               ? 'Selecione sua data de nascimento'
-                //               : null,
-                //         ),
-                //       ),
-                //       Divider(height: 1, color: Colors.grey.withAlpha(100), thickness: 1),
-                //       Padding(
-                //         padding: const EdgeInsets.only(top: 24, bottom: 12),
-                //         child: Row(
-                //           children: [
-                //             Expanded(
-                //               child: FieldText(
-                //                 controller: _weightController,
-                //                 label: 'Peso (kg)',
-                //                 hintText: 'Ex: 70.5',
-                //                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                //                 validator: (v) {
-                //                   final n = double.tryParse(v?.trim() ?? '');
-                //                   return (n == null || n <= 0) ? 'Informe um peso válido' : null;
-                //                 },
-                //               ),
-                //             ),
-                //             VerticalDivider(
-                //               width: 1,
-                //               color: Colors.grey.withAlpha(100),
-                //               thickness: 1,
-                //             ),
-                //             Expanded(
-                //               child: FieldText(
-                //                 controller: _heightController,
-                //                 label: 'Altura (cm)',
-                //                 hintText: 'Ex: 175',
-                //                 keyboardType: TextInputType.number,
-                //                 validator: (v) {
-                //                   final n = double.tryParse(v?.trim() ?? '');
-                //                   return (n == null || n <= 0) ? 'Informe uma altura válida' : null;
-                //                 },
-                //               ),
-                //             ),
-                //           ],
-                //         ),
-                //       ),
-                //       Divider(height: 1, color: Colors.grey.withAlpha(100), thickness: 1),
-                //       Padding(
-                //         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                //         child: _SexSelector(
-                //           value: _sex,
-                //           onChanged: (sex) => setState(() => _sex = sex),
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
                 Container(
                   padding: const EdgeInsets.all(16),
                   child: ListenableBuilder(
                     listenable: viewModel,
-                    builder: (_, __) => FilledButton(
-                      onPressed: viewModel.isSaving ? null : _submit,
-                      child: viewModel.isSaving
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(
-                              _currentPage == 3 ? 'Cadastrar' : pages[_currentPage].$2() ? 'Próximo' : 'Aguardando',
-                            ),
+                    builder: (_, __) => ProgressButton(
+                        isLoading: viewModel.isSaving,
+                        currentStep: _currentPage,
+                        steps: pages,
+                        onClick: _submit,
                     ),
                   ),
                 ),

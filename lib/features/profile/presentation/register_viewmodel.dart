@@ -9,9 +9,7 @@ class RegisterState {
   final String name;
   final String birthdateText;
   final String heightText;
-  final int? height;
   final String weightText;
-  final double? weight;
   final BodySex sex;
   final bool isSaved;
 
@@ -19,9 +17,7 @@ class RegisterState {
     this.name = '',
     this.birthdateText = '',
     this.heightText = '',
-    this.height,
     this.weightText = '',
-    this.weight,
     this.sex = BodySex.male,
     this.isSaved = false,
   });
@@ -42,19 +38,23 @@ class RegisterState {
       name: name ?? this.name,
       birthdateText: birthdateText ?? this.birthdateText,
       heightText: heightText ?? this.heightText,
-      height: height ?? this.height,
       weightText: weightText ?? this.weightText,
-      weight: weight ?? this.weight,
       sex: sex ?? this.sex,
       isSaved: isSaved ?? this.isSaved,
     );
   }
 
   // Derived states
-  bool get isNameValid => name.isNotEmpty && name.split(" ").length >= 2;
+  bool get isNameValid => name.isNotEmpty && name.trim().split(" ").length >= 2;
 
   DateTime? get birthdate => parseBirthdate(birthdateText);
   bool get isBirthdateValid => birthdate != null;
+
+  int? get height => int.tryParse(heightText);
+  bool get isHeightValid => height != null && height! > 100;
+
+  double? get weight => double.tryParse(weightText);
+  bool get isWeightValid => weight != null && weight! > 40;
 }
 
 class RegisterViewModel extends ChangeNotifier {
@@ -122,7 +122,7 @@ DateTime? parseBirthdate(String text) {
   final month = int.tryParse(parts[1]);
   final year = int.tryParse(parts[2]);
 
-  if (day == null || month == null || year == null) {
+  if (day == null || month == null || year == null || parts[2].length != 4) {
     return null;
   }
 
