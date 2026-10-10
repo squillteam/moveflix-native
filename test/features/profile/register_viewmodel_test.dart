@@ -36,13 +36,16 @@ UserModel _user() => UserModel(
 void main() {
   group('RegisterViewModel', () {
     test('isSaving starts as false', () {
-      final vm = RegisterViewModel(SaveUserUseCase(_FakeUserRepository()));
+      final vm = RegisterViewModel(
+          saveUserUseCase:
+              SaveUserUseCase(userRepository: _FakeUserRepository()));
       expect(vm.isSaving, isFalse);
     });
 
     test('save calls repository saveUser with the given user', () async {
       final repo = _FakeUserRepository();
-      final vm = RegisterViewModel(SaveUserUseCase(repo));
+      final vm = RegisterViewModel(
+          saveUserUseCase: SaveUserUseCase(userRepository: repo));
       final user = _user();
 
       await vm.save(user);
@@ -53,14 +56,18 @@ void main() {
     });
 
     test('isSaving is false after successful save', () async {
-      final vm = RegisterViewModel(SaveUserUseCase(_FakeUserRepository()));
+      final vm = RegisterViewModel(
+          saveUserUseCase:
+              SaveUserUseCase(userRepository: _FakeUserRepository()));
       await vm.save(_user());
       expect(vm.isSaving, isFalse);
     });
 
-    test('isSaving is false after save throws (finally resets state)', () async {
+    test('isSaving is false after save throws (finally resets state)',
+        () async {
       final repo = _FakeUserRepository()..shouldThrow = true;
-      final vm = RegisterViewModel(SaveUserUseCase(repo));
+      final vm = RegisterViewModel(
+          saveUserUseCase: SaveUserUseCase(userRepository: repo));
 
       await vm.save(_user());
 
@@ -68,7 +75,9 @@ void main() {
     });
 
     test('notifyListeners called at start and end of save', () async {
-      final vm = RegisterViewModel(SaveUserUseCase(_FakeUserRepository()));
+      final vm = RegisterViewModel(
+          saveUserUseCase:
+              SaveUserUseCase(userRepository: _FakeUserRepository()));
       final notifyLog = <bool>[];
       vm.addListener(() => notifyLog.add(vm.isSaving));
 
@@ -77,9 +86,11 @@ void main() {
       expect(notifyLog, [true, false]);
     });
 
-    test('notifyListeners called at start and end even when save throws', () async {
+    test('notifyListeners called at start and end even when save throws',
+        () async {
       final repo = _FakeUserRepository()..shouldThrow = true;
-      final vm = RegisterViewModel(SaveUserUseCase(repo));
+      final vm = RegisterViewModel(
+          saveUserUseCase: SaveUserUseCase(userRepository: repo));
       final notifyLog = <bool>[];
       vm.addListener(() => notifyLog.add(vm.isSaving));
 

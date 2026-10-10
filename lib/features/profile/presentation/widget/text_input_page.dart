@@ -51,7 +51,7 @@ class TextInputPage extends StatelessWidget {
           // aqui precisa ser 18 / 0.75 para renderizar visualmente a 18px.
           floatingLabelStyle: const TextStyle(
             color: Colors.white,
-            fontSize: 24,
+            fontSize: 22,
           ),
           hintText: hintText,
           hintStyle: TextStyle(
@@ -104,15 +104,9 @@ class HeightInputFormatter extends TextInputFormatter {
       return newValue;
     }
 
-    var cleanText = newValue.text.replaceAll(RegExp(r'[^0-9,]'), '');
+    var cleanText = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
     if (cleanText.length > 6 || cleanText.isEmpty) {
       return oldValue;
-    }
-
-    final firstComma = cleanText.indexOf(',');
-    if (firstComma != -1) {
-      cleanText = cleanText.substring(0, firstComma + 1) +
-          cleanText.substring(firstComma + 1).replaceAll(',', '');
     }
 
     final formattedText = cleanText + ' cm';

@@ -9,9 +9,8 @@ import 'package:moveflix/features/body_map/body_map_module.dart';
 import 'package:moveflix/features/body_map/domain/repositories/body_map_repository.dart';
 import 'package:moveflix/features/body_map/presentation/body_map_viewmodel.dart';
 import 'package:moveflix/features/body_map/presentation/body_map_widget.dart';
-import 'package:moveflix/features/profile/domain/usecases/save_user_use_case.dart';
-import 'package:moveflix/features/profile/presentation/register_viewmodel.dart';
-import 'package:moveflix/features/profile/presentation/register_widget.dart';
+import 'package:moveflix/features/profile/profile_module.dart';
+import 'package:moveflix/features/profile/profile_routes.dart';
 import 'package:moveflix/features/video/data/datasources/video_network_datasource.dart';
 import 'package:moveflix/features/video/data/repositories/video_repository_impl.dart';
 import 'package:moveflix/features/video/domain/repositories/video_repository.dart';
@@ -33,7 +32,7 @@ void main() async {
   _registerDependencies();
 
   final hasUser = await ServiceLocator.get<UserRepository>().hasUser();
-  final initialRoute = hasUser ? WorkoutRoutes.list : RegisterWidget.routeName;
+  final initialRoute = hasUser ? WorkoutRoutes.list : ProfileRoutes.save;
 
   runApp(MyApp(initialRoute: initialRoute));
 }
@@ -69,13 +68,11 @@ class MyApp extends StatelessWidget {
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
-          case RegisterWidget.routeName:
+          case ProfileRoutes.save:
+            ProfileModule.register();
             return MaterialPageRoute(
-              builder: (_) => RegisterWidget(
-                viewModel: RegisterViewModel(
-                  SaveUserUseCase(ServiceLocator.get<UserRepository>()),
-                ),
-              ),
+              settings: settings,
+              builder: ProfileModule.routes[ProfileRoutes.save]!,
             );
 
           case VideoWidget.routeName:
@@ -93,7 +90,8 @@ class MyApp extends StatelessWidget {
             final bodyMapViewModel = BodyMapViewModel(
               ServiceLocator.get<BodyMapRepository>(),
             );
-            WorkoutModule.computeRegionStress().then(bodyMapViewModel.applyStress);
+            WorkoutModule.computeRegionStress()
+                .then(bodyMapViewModel.applyStress);
             return MaterialPageRoute(
               builder: (_) => BodyMapWidget(viewModel: bodyMapViewModel),
             );

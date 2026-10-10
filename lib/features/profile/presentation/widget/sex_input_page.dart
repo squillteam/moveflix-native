@@ -23,7 +23,7 @@ class SexInputPage extends StatelessWidget {
               'Sexo',
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: 16.5,
               ),
           ),
           const SizedBox(height: 4),

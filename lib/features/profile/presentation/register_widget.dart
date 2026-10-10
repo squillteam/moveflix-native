@@ -9,8 +9,6 @@ import 'package:moveflix/features/profile/presentation/widget/text_input_page.da
 import 'package:moveflix/features/workout/workout_routes.dart';
 
 class RegisterWidget extends StatefulWidget {
-  static const routeName = '/register';
-
   final RegisterViewModel viewModel;
 
   const RegisterWidget({super.key, required this.viewModel});

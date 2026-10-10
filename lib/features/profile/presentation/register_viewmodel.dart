@@ -53,22 +53,22 @@ class RegisterState {
   int? get height => int.tryParse(heightText.replaceAll(" cm", ""));
   bool get isHeightValid => height != null && height! > 100;
 
-  double? get weight => double.tryParse(weightText.replaceAll(" kg", ""));
+  double? get weight => double.tryParse(weightText.replaceAll(" kg", "").replaceAll(",", "."));
   bool get isWeightValid => weight != null && weight! > 40;
 }
 
 class RegisterViewModel extends ChangeNotifier {
-  final SaveUserUseCase _saveUser;
+  final SaveUserUseCase _saveUserUseCase;
 
   RegisterState _state = const RegisterState();
-
   RegisterState get state => _state;
 
   bool _isSaving = false;
-
   bool get isSaving => _isSaving;
 
-  RegisterViewModel(this._saveUser);
+  RegisterViewModel({
+    required SaveUserUseCase saveUserUseCase,
+  }) : _saveUserUseCase = saveUserUseCase;
 
   void onNameChanged(String name) {
     _state = _state.copyWith(name: name);
@@ -99,7 +99,7 @@ class RegisterViewModel extends ChangeNotifier {
     try {
       _isSaving = true;
       notifyListeners();
-      await _saveUser(user);
+      await _saveUserUseCase(user);
     } catch (e) {
       log(e.toString());
     } finally {
