@@ -168,6 +168,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                     listenable: viewModel,
                     builder: (_, __) => PageView(
                       controller: _pageController,
+                      physics: const NeverScrollableScrollPhysics(),
                       onPageChanged: (index) {
                         setState(() {
                           _currentPage = index;
