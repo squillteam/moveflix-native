@@ -75,8 +75,6 @@ class RegisterViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void validateName(String name) {}
-
   void onBirthdateChanged(String birthdateText) {
     _state = _state.copyWith(birthdateText: birthdateText);
     notifyListeners();

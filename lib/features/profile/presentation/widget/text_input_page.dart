@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class InputPage extends StatelessWidget {
+class TextInputPage extends StatelessWidget {
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final String label;
   final String? hintText;
   final TextInputType? type;
@@ -10,10 +11,11 @@ class InputPage extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final void Function(String)? onChanged;
 
-  const InputPage({
+  const TextInputPage({
     super.key,
     required this.controller,
     required this.label,
+    this.focusNode,
     this.onChanged,
     this.hintText,
     this.type,
@@ -28,6 +30,7 @@ class InputPage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: TextFormField(
         controller: controller,
+        focusNode: focusNode,
         onChanged: onChanged,
         keyboardType: type,
         validator: validator,
@@ -42,10 +45,6 @@ class InputPage extends StatelessWidget {
           border: InputBorder.none,
           label: Text(
               label
-          ),
-          labelStyle: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
           ),
           // O InputDecorator aplica uma escala extra de 0.75x ao label
           // flutuante (floatingLabelBehavior: always), então o fontSize

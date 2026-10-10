@@ -25,6 +25,10 @@ class _RegisterWidgetState extends State<RegisterWidget> {
   final _birthdayController = TextEditingController();
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
+  final _nameFocusNode = FocusNode();
+  final _birthdayFocusNode = FocusNode();
+  final _heightFocusNode = FocusNode();
+  final _weightFocusNode = FocusNode();
   final _pageController = PageController();
   int _currentPage = 0;
 
@@ -42,14 +46,19 @@ class _RegisterWidgetState extends State<RegisterWidget> {
     _nameController.dispose();
     _weightController.dispose();
     _heightController.dispose();
+    _nameFocusNode.dispose();
+    _birthdayFocusNode.dispose();
+    _heightFocusNode.dispose();
+    _weightFocusNode.dispose();
     viewModel.dispose();
     super.dispose();
   }
 
-  List<(Widget, bool Function())> get pages => [
+  late List<(Widget, bool Function())> pages = [
         (
-          InputPage(
+          TextInputPage(
             controller: _nameController,
+            focusNode: _nameFocusNode,
             label: "What your name?",
             hintText: "Type here",
             onChanged: viewModel.onNameChanged,
@@ -63,8 +72,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
           () => viewModel.state.isNameValid,
         ),
         (
-          InputPage(
+          TextInputPage(
             controller: _birthdayController,
+            focusNode: _birthdayFocusNode,
             label: "What your birthday?",
             hintText: "Type here",
             type: TextInputType.datetime,
@@ -74,8 +84,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
           () => viewModel.state.isBirthdateValid,
         ),
         (
-          InputPage(
+          TextInputPage(
             controller: _heightController,
+            focusNode: _heightFocusNode,
             label: "What your height?",
             hintText: "Type here",
             type: TextInputType.number,
@@ -85,8 +96,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
           () => viewModel.state.isHeightValid
         ),
         (
-          InputPage(
+          TextInputPage(
             controller: _weightController,
+            focusNode: _weightFocusNode,
             label: "What your weight?",
             hintText: "Type here",
             type: TextInputType.number,
@@ -173,6 +185,10 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                         setState(() {
                           _currentPage = index;
                         });
+                        final page = pages[index].$1;
+                        if (page is TextInputPage) {
+                          page.focusNode?.requestFocus();
+                        }
                       },
                       children: pages.map((page) => page.$1).toList(),
                     ),
@@ -228,109 +244,4 @@ class _RegisterWidgetState extends State<RegisterWidget> {
       Navigator.of(context).pushReplacementNamed(WorkoutRoutes.list);
     }
   }
-}
-
-class _SexSelector extends StatelessWidget {
-  final BodySex value;
-  final ValueChanged<BodySex> onChanged;
-
-  const _SexSelector({required this.value, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Sexo', style: Theme.of(context).textTheme.bodySmall),
-        const SizedBox(height: 16),
-        SegmentedButton<BodySex>(
-          style: ButtonStyle(
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          expandedInsets: EdgeInsets.zero,
-          segments: const [
-            ButtonSegment(
-                value: BodySex.male,
-                label: Text('Masculino'),
-                icon: Icon(Icons.male)),
-            ButtonSegment(
-                value: BodySex.female,
-                label: Text('Feminino'),
-                icon: Icon(Icons.female)),
-          ],
-          selected: {value},
-          onSelectionChanged: (s) => onChanged(s.first),
-        ),
-      ],
-    );
-  }
-}
-
-class _BirthdayField extends FormField<DateTime> {
-  _BirthdayField({
-    super.key,
-    super.validator,
-  }) : super(
-          builder: (FormFieldState<DateTime> state) {
-            final formatted = state.value == null
-                ? null
-                : '${state.value!.day.toString().padLeft(2, '0')}/'
-                    '${state.value!.month.toString().padLeft(2, '0')}/'
-                    '${state.value!.year}';
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InkWell(
-                  onTap: () async {
-                    final picked = await showDatePicker(
-                      context: state.context,
-                      initialDate: state.value ?? DateTime(2000),
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime.now(),
-                    );
-                    if (picked != null) state.didChange(picked);
-                  },
-                  borderRadius: BorderRadius.circular(4),
-                  child: InputDecorator(
-                    isEmpty: state.value == null,
-                    decoration: const InputDecoration(
-                      labelText: 'Data de nascimento',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      contentPadding:
-                          EdgeInsets.only(left: 4, right: 4, top: 8, bottom: 0),
-                      suffixIcon: Icon(Icons.calendar_today, size: 18),
-                      border: OutlineInputBorder(borderSide: BorderSide.none),
-                      enabledBorder:
-                          OutlineInputBorder(borderSide: BorderSide.none),
-                      focusedBorder:
-                          OutlineInputBorder(borderSide: BorderSide.none),
-                    ),
-                    child: Text(
-                      formatted ?? 'Ex: 16/02/1999',
-                      style:
-                          Theme.of(state.context).textTheme.bodyLarge?.copyWith(
-                                color: state.value == null
-                                    ? Colors.black.withAlpha(80)
-                                    : null,
-                              ),
-                    ),
-                  ),
-                ),
-                if (state.hasError)
-                  Container(
-                    margin: const EdgeInsets.only(left: 8),
-                    child: Text(
-                      state.errorText!,
-                      style: TextStyle(
-                        color: Theme.of(state.context).colorScheme.error,
-                        fontSize: 12,
-                        height: -0.1,
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          },
-        );
 }
