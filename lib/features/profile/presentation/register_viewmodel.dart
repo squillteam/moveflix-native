@@ -50,10 +50,10 @@ class RegisterState {
   DateTime? get birthdate => parseBirthdate(birthdateText);
   bool get isBirthdateValid => birthdate != null;
 
-  int? get height => int.tryParse(heightText);
+  int? get height => int.tryParse(heightText.replaceAll(" cm", ""));
   bool get isHeightValid => height != null && height! > 100;
 
-  double? get weight => double.tryParse(weightText);
+  double? get weight => double.tryParse(weightText.replaceAll(" kg", ""));
   bool get isWeightValid => weight != null && weight! > 40;
 }
 

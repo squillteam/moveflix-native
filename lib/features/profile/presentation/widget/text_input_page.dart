@@ -38,8 +38,28 @@ class InputPage extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
         decoration: InputDecoration(
-          label: Text(label),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          border: InputBorder.none,
+          label: Text(
+              label
+          ),
+          labelStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+          ),
+          // O InputDecorator aplica uma escala extra de 0.75x ao label
+          // flutuante (floatingLabelBehavior: always), então o fontSize
+          // aqui precisa ser 18 / 0.75 para renderizar visualmente a 18px.
+          floatingLabelStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+          ),
           hintText: hintText,
+          hintStyle: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white.withAlpha(128),
+          ),
         ),
       ),
     );

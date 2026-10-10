@@ -19,8 +19,14 @@ class SexInputPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Sexo', style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: 16),
+          Text(
+              'Sexo',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+              ),
+          ),
+          const SizedBox(height: 4),
           SegmentedButton<BodySex>(
             style: ButtonStyle(
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,

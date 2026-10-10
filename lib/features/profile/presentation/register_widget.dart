@@ -164,35 +164,16 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   ),
                 ),
                 Expanded(
-                  child: Theme(
-                    data: Theme.of(context).copyWith(
-                      inputDecorationTheme: Theme.of(context)
-                          .inputDecorationTheme
-                          .copyWith(
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            border: InputBorder.none,
-                            labelStyle: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                            hintStyle: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white.withAlpha(128),
-                            ),
-                          ),
-                    ),
-                    child: ListenableBuilder(
-                      listenable: viewModel,
-                      builder: (_, __) => PageView(
-                        controller: _pageController,
-                        onPageChanged: (index) {
-                          setState(() {
-                            _currentPage = index;
-                          });
-                        },
-                        children: pages.map((page) => page.$1).toList(),
-                      ),
+                  child: ListenableBuilder(
+                    listenable: viewModel,
+                    builder: (_, __) => PageView(
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentPage = index;
+                        });
+                      },
+                      children: pages.map((page) => page.$1).toList(),
                     ),
                   ),
                 ),
