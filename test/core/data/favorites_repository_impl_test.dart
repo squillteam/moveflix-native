@@ -19,7 +19,7 @@ UserModel _user({String name = 'David'}) => UserModel(
       sex: BodySex.male,
       birthday: DateTime(1999, 2, 16),
       weight: 80.0,
-      height: 175.0,
+      height: 175,
     );
 
 void main() {
@@ -36,7 +36,7 @@ void main() {
         final retrieved = await repo.getUser();
         expect(retrieved.name, 'David');
         expect(retrieved.weight, 80.0);
-        expect(retrieved.height, 175.0);
+        expect(retrieved.height, 175);
       });
 
       test('returns latest user after overwrite', () async {

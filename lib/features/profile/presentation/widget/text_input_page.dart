@@ -109,7 +109,7 @@ class HeightInputFormatter extends TextInputFormatter {
       return oldValue;
     }
 
-    final formattedText = cleanText + ' cm';
+    final formattedText = '$cleanText cm';
 
     return TextEditingValue(
       text: formattedText,
@@ -137,7 +137,7 @@ class WeightInputFormatter extends TextInputFormatter {
           cleanText.substring(firstComma + 1).replaceAll(',', '');
     }
 
-    final formattedText = cleanText + ' kg';
+    final formattedText = '$cleanText kg';
 
     return TextEditingValue(
       text: formattedText,

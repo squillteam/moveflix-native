@@ -17,7 +17,7 @@ class _FakeUserRepository implements UserRepository {
         sex: BodySex.male,
         birthday: DateTime(1990),
         weight: 70.0,
-        height: 170.0,
+        height: 170,
       );
 
   @override

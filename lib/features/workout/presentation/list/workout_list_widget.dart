@@ -34,6 +34,7 @@ class _WorkoutListWidgetState extends State<WorkoutListWidget> with RouteAware {
     viewModel.init();
 
     navigationEvent = viewModel.navigationEvents.listen((plan) {
+      if (!mounted) return;
       Navigator.of(context).pushNamed(
         WorkoutRoutes.detail,
         arguments: plan,
