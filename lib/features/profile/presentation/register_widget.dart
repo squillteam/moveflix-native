@@ -230,20 +230,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
     if (!_formKey.currentState!.validate()) return;
 
-    final birthday =
-        _birthdayController.text.trim().split("/").map(int.parse).toList();
-
-    await viewModel.save(UserModel(
-      name: _nameController.text.trim(),
-      sex: _sex,
-      birthday: DateTime(
-        birthday[2],
-        birthday[1],
-        birthday[0],
-      ),
-      weight: double.parse(_weightController.text.trim()),
-      height: double.parse(_heightController.text.trim()),
-    ));
+    await viewModel.register();
 
     if (mounted) {
       Navigator.of(context).pushReplacementNamed(WorkoutRoutes.list);

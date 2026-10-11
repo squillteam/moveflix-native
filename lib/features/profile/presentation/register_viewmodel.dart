@@ -44,6 +44,20 @@ class RegisterState {
     );
   }
 
+  UserModel? tryCreateUserModel() {
+    if (weight == null || height == null || birthdate == null) {
+      return null;
+    }
+
+    return UserModel(
+        name: name,
+        sex: sex,
+        birthday: birthdate!,
+        weight: weight!,
+        height: height!,
+    );
+  }
+
   // Derived states
   bool get isNameValid => name.isNotEmpty && name.trim().split(" ").length >= 2;
 
@@ -95,11 +109,17 @@ class RegisterViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> save(UserModel user) async {
+  Future<void> register() async {
     try {
       _isSaving = true;
       notifyListeners();
-      await _saveUserUseCase(user);
+
+      final user = _state.tryCreateUserModel();
+      if (user == null) {
+        throw Exception("Failed to create user model");
+      }
+
+      await _saveUserUseCase(_state.tryCreateUserModel()!);
     } catch (e) {
       log(e.toString());
     } finally {
