@@ -25,76 +25,99 @@ class _FakeUserRepository implements UserRepository {
   }
 }
 
-UserModel _user() => UserModel(
-      name: 'David',
-      sex: BodySex.male,
-      birthday: DateTime(1999, 2, 16),
-      weight: 80.0,
-      height: 175.0,
-    );
+RegisterViewModel _buildViewModel(UserRepository repo) {
+  return RegisterViewModel(
+    saveUserUseCase: SaveUserUseCase(userRepository: repo),
+  );
+}
+
+void _fillValidData(RegisterViewModel vm) {
+  vm.onNameChanged('David Gaspar');
+  vm.onBirthdateChanged('16/02/1999');
+  vm.onHeightChanged('175 cm');
+  vm.onWeightChanged('80 kg');
+  vm.onSexChanged(BodySex.male);
+}
 
 void main() {
   group('RegisterViewModel', () {
     test('isSaving starts as false', () {
-      final vm = RegisterViewModel(
-          saveUserUseCase:
-              SaveUserUseCase(userRepository: _FakeUserRepository()));
+      final vm = _buildViewModel(_FakeUserRepository());
       expect(vm.isSaving, isFalse);
     });
 
-    test('save calls repository saveUser with the given user', () async {
+    test('register calls repository saveUser with the given user', () async {
       final repo = _FakeUserRepository();
-      final vm = RegisterViewModel(
-          saveUserUseCase: SaveUserUseCase(userRepository: repo));
-      final user = _user();
+      final vm = _buildViewModel(repo);
+      _fillValidData(vm);
 
-      await vm.save(user);
+      await vm.register();
 
       expect(repo.saved, isNotNull);
-      expect(repo.saved!.name, 'David');
+      expect(repo.saved!.name, 'David Gaspar');
+      expect(repo.saved!.height, 175);
       expect(repo.saved!.weight, 80.0);
     });
 
-    test('isSaving is false after successful save', () async {
-      final vm = RegisterViewModel(
-          saveUserUseCase:
-              SaveUserUseCase(userRepository: _FakeUserRepository()));
-      await vm.save(_user());
+    test('isSaving is false after a successful register', () async {
+      final vm = _buildViewModel(_FakeUserRepository());
+      _fillValidData(vm);
+
+      await vm.register();
+
       expect(vm.isSaving, isFalse);
     });
 
-    test('isSaving is false after save throws (finally resets state)',
+    test('isSaved is true after a successful register', () async {
+      final vm = _buildViewModel(_FakeUserRepository());
+      _fillValidData(vm);
+
+      await vm.register();
+
+      expect(vm.state.isSaved, isTrue);
+    });
+
+    test('isSaving is false after register throws (finally resets state)',
         () async {
       final repo = _FakeUserRepository()..shouldThrow = true;
-      final vm = RegisterViewModel(
-          saveUserUseCase: SaveUserUseCase(userRepository: repo));
+      final vm = _buildViewModel(repo);
+      _fillValidData(vm);
 
-      await vm.save(_user());
+      await vm.register();
 
       expect(vm.isSaving, isFalse);
     });
 
-    test('notifyListeners called at start and end of save', () async {
-      final vm = RegisterViewModel(
-          saveUserUseCase:
-              SaveUserUseCase(userRepository: _FakeUserRepository()));
+    test('isSaved is false after register throws', () async {
+      final repo = _FakeUserRepository()..shouldThrow = true;
+      final vm = _buildViewModel(repo);
+      _fillValidData(vm);
+
+      await vm.register();
+
+      expect(vm.state.isSaved, isFalse);
+    });
+
+    test('notifyListeners called at start and end of register', () async {
+      final vm = _buildViewModel(_FakeUserRepository());
+      _fillValidData(vm);
       final notifyLog = <bool>[];
       vm.addListener(() => notifyLog.add(vm.isSaving));
 
-      await vm.save(_user());
+      await vm.register();
 
       expect(notifyLog, [true, false]);
     });
 
-    test('notifyListeners called at start and end even when save throws',
+    test('notifyListeners called at start and end even when register throws',
         () async {
       final repo = _FakeUserRepository()..shouldThrow = true;
-      final vm = RegisterViewModel(
-          saveUserUseCase: SaveUserUseCase(userRepository: repo));
+      final vm = _buildViewModel(repo);
+      _fillValidData(vm);
       final notifyLog = <bool>[];
       vm.addListener(() => notifyLog.add(vm.isSaving));
 
-      await vm.save(_user());
+      await vm.register();
 
       expect(notifyLog, [true, false]);
     });

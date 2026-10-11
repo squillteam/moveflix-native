@@ -119,9 +119,11 @@ class RegisterViewModel extends ChangeNotifier {
         throw Exception("Failed to create user model");
       }
 
-      await _saveUserUseCase(_state.tryCreateUserModel()!);
+      await _saveUserUseCase(user);
+      _state = _state.copyWith(isSaved: true);
     } catch (e) {
       log(e.toString());
+      _state = _state.copyWith(isSaved: false);
     } finally {
       _isSaving = false;
       notifyListeners();

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:moveflix/core/domain/models/body_sex.dart';
-import 'package:moveflix/core/domain/models/user.dart';
 import 'package:moveflix/features/profile/presentation/register_viewmodel.dart';
 import 'package:moveflix/features/profile/presentation/widget/progress_button.dart';
 import 'package:moveflix/features/profile/presentation/widget/sex_input_page.dart';
@@ -31,8 +29,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
   int _currentPage = 0;
 
   RegisterViewModel get viewModel => widget.viewModel;
-
-  final BodySex _sex = BodySex.male;
 
   @override
   void initState() {
@@ -68,7 +64,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
             hintText: "Type here",
             onChanged: viewModel.onNameChanged,
             validator: (_) {
-              if (viewModel.state.isNameValid) {
+              if (!viewModel.state.isNameValid) {
                 return 'Please enter your name';
               }
               return null;
@@ -232,7 +228,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
     await viewModel.register();
 
-    if (mounted) {
+    if (mounted && viewModel.state.isSaved) {
       Navigator.of(context).pushReplacementNamed(WorkoutRoutes.list);
     }
   }
