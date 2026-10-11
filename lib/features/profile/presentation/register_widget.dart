@@ -41,14 +41,21 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
   @override
   void dispose() {
+    // Dispose the controllers
     _nameController.dispose();
+    _birthdayController.dispose();
     _weightController.dispose();
     _heightController.dispose();
+    _pageController.dispose();
+
+    // Dispose the focus nodes
     _nameFocusNode.dispose();
     _birthdayFocusNode.dispose();
     _heightFocusNode.dispose();
     _weightFocusNode.dispose();
+
     viewModel.dispose();
+
     super.dispose();
   }
 
