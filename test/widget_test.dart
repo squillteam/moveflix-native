@@ -6,6 +6,7 @@ import 'package:moveflix/app/databases/hive_adapter.dart';
 import 'package:moveflix/app/locator.dart';
 import 'package:moveflix/core/domain/models/user.dart';
 import 'package:moveflix/core/domain/repositories/user_repository.dart';
+import 'package:moveflix/features/profile/profile_routes.dart';
 import 'package:moveflix/features/workout/domain/models/workout_plan.dart';
 import 'package:moveflix/features/workout/domain/models/workout_preferences.dart';
 import 'package:moveflix/features/workout/domain/repositories/workout_plan_repository.dart';
@@ -58,7 +59,7 @@ void main() {
 
   testWidgets('App smoke test — renders without exception',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp(initialRoute: '/register'));
+    await tester.pumpWidget(const MyApp(initialRoute: ProfileRoutes.save));
     expect(find.byType(MyApp), findsOneWidget);
   });
 }

@@ -8,7 +8,7 @@ class UserModel extends Model {
   final BodySex sex;
   final DateTime birthday;
   final double weight;
-  final double height;
+  final int height;
 
   const UserModel({
     required this.name,
@@ -24,7 +24,7 @@ class UserModel extends Model {
       sex: BodySex.values.firstWhere((e) => e.name == map['sex']),
       birthday: DateTime.fromMillisecondsSinceEpoch(map['birthday'] as int),
       weight: (map['weight'] as num).toDouble(),
-      height: (map['height'] as num).toDouble(),
+      height: (map['height'] as num).toInt(),
     );
   }
 
@@ -33,7 +33,7 @@ class UserModel extends Model {
     BodySex? sex,
     DateTime? birthday,
     double? weight,
-    double? height,
+    int? height,
   }) =>
       UserModel(
         name: name ?? this.name,
