@@ -55,67 +55,73 @@ class _RegisterWidgetState extends State<RegisterWidget> {
     super.dispose();
   }
 
-  late List<(Widget, bool Function())> pages = [
-        (
-          TextInputPage(
-            controller: _nameController,
-            focusNode: _nameFocusNode,
-            label: "What your name?",
-            hintText: "Type here",
-            onChanged: viewModel.onNameChanged,
-            validator: (_) {
-              if (!viewModel.state.isNameValid) {
-                return 'Please enter your name';
-              }
-              return null;
-            },
-          ),
-          () => viewModel.state.isNameValid,
-        ),
-        (
-          TextInputPage(
-            controller: _birthdayController,
-            focusNode: _birthdayFocusNode,
-            label: "What your birthday?",
-            hintText: "Type here",
-            type: TextInputType.datetime,
-            onChanged: viewModel.onBirthdateChanged,
-            inputFormatters: [BirthdateInputFormatter()],
-          ),
-          () => viewModel.state.isBirthdateValid,
-        ),
-        (
-          TextInputPage(
-            controller: _heightController,
-            focusNode: _heightFocusNode,
-            label: "What your height?",
-            hintText: "Type here",
-            type: TextInputType.number,
-            onChanged: viewModel.onHeightChanged,
-            inputFormatters: [HeightInputFormatter()],
-          ),
-          () => viewModel.state.isHeightValid
-        ),
-        (
-          TextInputPage(
-            controller: _weightController,
-            focusNode: _weightFocusNode,
-            label: "What your weight?",
-            hintText: "Type here",
-            type: TextInputType.number,
-            onChanged: viewModel.onWeightChanged,
-            inputFormatters: [WeightInputFormatter()],
-          ),
-          () => viewModel.state.isWeightValid,
-        ),
-        (
-          SexInputPage(
-            value: viewModel.state.sex,
-            onSexChanged: viewModel.onSexChanged,
-          ),
-          () => true,
-        ),
-      ];
+  // Cada passo guarda um builder, não o widget pronto: a página é recriada a
+  // cada build com o estado atual do ViewModel.
+  late final List<_RegisterStep> _steps = [
+    _RegisterStep(
+      focusNode: _nameFocusNode,
+      isValid: () => viewModel.state.isNameValid,
+      build: () => TextInputPage(
+        controller: _nameController,
+        focusNode: _nameFocusNode,
+        label: "What your name?",
+        hintText: "Type here",
+        onChanged: viewModel.onNameChanged,
+        validator: (_) {
+          if (!viewModel.state.isNameValid) {
+            return 'Please enter your name';
+          }
+          return null;
+        },
+      ),
+    ),
+    _RegisterStep(
+      focusNode: _birthdayFocusNode,
+      isValid: () => viewModel.state.isBirthdateValid,
+      build: () => TextInputPage(
+        controller: _birthdayController,
+        focusNode: _birthdayFocusNode,
+        label: "What your birthday?",
+        hintText: "Type here",
+        type: TextInputType.datetime,
+        onChanged: viewModel.onBirthdateChanged,
+        inputFormatters: [BirthdateInputFormatter()],
+      ),
+    ),
+    _RegisterStep(
+      focusNode: _heightFocusNode,
+      isValid: () => viewModel.state.isHeightValid,
+      build: () => TextInputPage(
+        controller: _heightController,
+        focusNode: _heightFocusNode,
+        label: "What your height?",
+        hintText: "Type here",
+        type: TextInputType.number,
+        onChanged: viewModel.onHeightChanged,
+        inputFormatters: [HeightInputFormatter()],
+      ),
+    ),
+    _RegisterStep(
+      focusNode: _weightFocusNode,
+      isValid: () => viewModel.state.isWeightValid,
+      build: () => TextInputPage(
+        controller: _weightController,
+        focusNode: _weightFocusNode,
+        label: "What your weight?",
+        hintText: "Type here",
+        type: TextInputType.number,
+        onChanged: viewModel.onWeightChanged,
+        inputFormatters: [WeightInputFormatter()],
+      ),
+    ),
+    _RegisterStep(
+      isValid: () => true,
+      build: () => SexInputPage(
+        value: viewModel.state.sex,
+        onSexChanged: viewModel.onSexChanged,
+      ),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -186,12 +192,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                         setState(() {
                           _currentPage = index;
                         });
-                        final page = pages[index].$1;
-                        if (page is TextInputPage) {
-                          page.focusNode?.requestFocus();
-                        }
+                        _steps[index].focusNode?.requestFocus();
                       },
-                      children: pages.map((page) => page.$1).toList(),
+                      children: _steps.map((step) => step.build()).toList(),
                     ),
                   ),
                 ),
@@ -201,8 +204,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                     listenable: viewModel,
                     builder: (_, __) => ProgressButton(
                         isLoading: viewModel.isSaving,
-                        currentStep: _currentPage,
-                        steps: pages,
+                        canProceed: _steps[_currentPage].isValid(),
+                        isLastStep: _currentPage == _steps.length - 1,
                         onClick: _submit,
                     ),
                   ),
@@ -216,7 +219,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
   }
 
   Future<void> _submit() async {
-    if (_currentPage < pages.length - 1) {
+    if (_currentPage < _steps.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -232,4 +235,16 @@ class _RegisterWidgetState extends State<RegisterWidget> {
       Navigator.of(context).pushReplacementNamed(WorkoutRoutes.list);
     }
   }
+}
+
+class _RegisterStep {
+  final Widget Function() build;
+  final bool Function() isValid;
+  final FocusNode? focusNode;
+
+  const _RegisterStep({
+    required this.build,
+    required this.isValid,
+    this.focusNode,
+  });
 }
