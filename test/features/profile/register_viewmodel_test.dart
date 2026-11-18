@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moveflix/core/domain/models/body_sex.dart';
 import 'package:moveflix/core/domain/models/user.dart';
@@ -8,6 +10,7 @@ import 'package:moveflix/features/profile/presentation/register_viewmodel.dart';
 class _FakeUserRepository implements UserRepository {
   UserModel? saved;
   bool shouldThrow = false;
+  Completer<void>? gate;
 
   @override
   Future<UserModel> getUser() async {
@@ -20,6 +23,7 @@ class _FakeUserRepository implements UserRepository {
 
   @override
   Future<void> saveUser(UserModel user) async {
+    await gate?.future;
     if (shouldThrow) throw Exception('storage failure');
     saved = user;
   }
@@ -120,6 +124,22 @@ void main() {
       await vm.register();
 
       expect(notifyLog, [true, false]);
+    });
+
+    test('edits made while saving are ignored so isSaved matches saved user',
+        () async {
+      final repo = _FakeUserRepository()..gate = Completer<void>();
+      final vm = _buildViewModel(repo);
+      _fillValidData(vm);
+
+      final pending = vm.register();
+      vm.onSexChanged(BodySex.female);
+      repo.gate!.complete();
+      await pending;
+
+      expect(vm.state.sex, BodySex.male);
+      expect(repo.saved!.sex, BodySex.male);
+      expect(vm.state.isSaved, isTrue);
     });
   });
 }

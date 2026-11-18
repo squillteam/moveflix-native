@@ -84,27 +84,34 @@ class RegisterViewModel extends ChangeNotifier {
     required SaveUserUseCase saveUserUseCase,
   }) : _saveUserUseCase = saveUserUseCase;
 
+  // Edits are ignored while saving so that `isSaved` always refers to the
+  // state that was actually submitted.
   void onNameChanged(String name) {
+    if (_isSaving) return;
     _state = _state.copyWith(name: name);
     notifyListeners();
   }
 
   void onBirthdateChanged(String birthdateText) {
+    if (_isSaving) return;
     _state = _state.copyWith(birthdateText: birthdateText);
     notifyListeners();
   }
 
   void onHeightChanged(String heightText) {
+    if (_isSaving) return;
     _state = _state.copyWith(heightText: heightText);
     notifyListeners();
   }
 
   void onWeightChanged(String weightText) {
+    if (_isSaving) return;
     _state = _state.copyWith(weightText: weightText);
     notifyListeners();
   }
 
   void onSexChanged(BodySex sex) {
+    if (_isSaving) return;
     _state = _state.copyWith(sex: sex);
     notifyListeners();
   }
